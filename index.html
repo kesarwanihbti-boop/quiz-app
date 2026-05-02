@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- High Score -->
+  <h3 id="highScore">High Score: 0</h3>
+
+  <!-- Timer -->
+  <h3 id="timer">Time: 10</h3>
+
+<div id="userBox">
+  <input type="text" id="username" placeholder="Enter your name">
+  <button onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<div id="scoreBoard"></div>
+
+  <!-- Quiz Container -->
+  <div id="quiz" style="display:none;">
+    <h2 id="question">Loading...</h2>
+    
+    <!-- Answers will be inserted by JS -->
+    <div id="answers"></div>
+    
+    <!-- Next Button -->
+    <button id="nextBtn" style="display:none;">Next</button>
+    
+    <!-- Result -->
+    <p id="result"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
