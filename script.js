@@ -154,7 +154,7 @@ nextBtn.onclick = async () => {
     localStorage.setItem("scores", JSON.stringify(scores));
 
     try {
-      const response = await fetch("http://localhost:3000/save-score", {
+      const response = await fetch("https://quiz-app-1-s9c3.onrender.com/save-score", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -197,7 +197,7 @@ function showScores() {
 
 async function loadLeaderboard() {
   try {
-    const response = await fetch("http://localhost:3000/leaderboard");
+    const response = await fetch("https://quiz-app-1-s9c3.onrender.com/leaderboard");
     const data = await response.json();
     const scoreBoard = document.getElementById("scoreBoard");
 
