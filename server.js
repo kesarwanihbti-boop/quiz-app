@@ -2,9 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://admin:quiz123@ac-uwrmpsn-shard-00-00.0hovm4s.mongodb.net:27017,ac-uwrmpsn-shard-00-01.0hovm4s.mongodb.net:27017,ac-uwrmpsn-shard-00-02.0hovm4s.mongodb.net:27017/?ssl=true&replicaSet=atlas-shkxe3-shard-0&authSource=admin&appName=Cluster0")
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log("MongoDB error:", err));
+  .catch(err => console.log(err));
 
 const app = express();
 app.use(cors());
