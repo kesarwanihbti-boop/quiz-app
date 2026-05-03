@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Quiz App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,8 +17,12 @@
   <h3 id="timer">Time: 10</h3>
 
 <div id="userBox">
-  <input type="text" id="username" placeholder="Enter your name">
-  <button onclick="startQuiz()">Start Quiz</button>
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" autocomplete="username" required>
+  <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+  <p id="authMessage"></p>
+  <button onclick="loginUser()">Login</button>
+  <button class="secondary-btn" onclick="signupUser()">Sign Up</button>
 </div>
 
 <div id="scoreBoard"></div>

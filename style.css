@@ -7,8 +7,9 @@
 
 /* Page background */
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,22 +20,24 @@ body {
 }
 
 /* Quiz card */
+.container,
 #quiz {
   background: white;
+  color: #333;
   width: 400px;
   max-width: 100%;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   text-align: center;
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.5s ease-in;
 }
 
 /* Fade animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -74,8 +77,8 @@ button {
   padding: 12px;
   border: none;
   border-radius: 8px;
-  background: #f1f1f1;
-  color: #333;
+  background: #667eea;
+  color: white;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -83,7 +86,7 @@ button {
 
 /* Hover effect */
 button:hover {
-  background: #ddd;
+  background: #5a67d8;
   transform: scale(1.02);
 }
 
@@ -129,6 +132,7 @@ button.wrong {
 
 #userBox {
   background: white;
+  color: #333;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -138,10 +142,38 @@ button.wrong {
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
-#username {
+#userBox h2 {
+  margin-bottom: 18px;
+}
+
+#username,
+#password {
   width: 80%;
   padding: 10px;
   margin-bottom: 10px;
+  font: inherit;
+}
+
+.secondary-btn {
+  background: #764ba2;
+}
+
+.secondary-btn:hover {
+  background: #653f8a;
+}
+
+#authMessage {
+  min-height: 24px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+#authMessage.success {
+  color: #2ecc71;
+}
+
+#authMessage.error {
+  color: #e74c3c;
 }
 
 #scoreBoard {

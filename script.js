@@ -22,6 +22,18 @@ let timeLeft = 10;
 let timer;
 let highScore = localStorage.getItem("highScore") || 0;
 let playerName = "";
+const DEPLOYED_API_URL = "https://quiz-app-1-s9c3.onrender.com";
+const API_URL = getApiUrl();
+
+function getApiUrl() {
+  const localHosts = ["localhost", "127.0.0.1"];
+
+  if (window.location.protocol === "file:" || localHosts.includes(window.location.hostname)) {
+    return "http://localhost:3000";
+  }
+
+  return DEPLOYED_API_URL;
+}
 
 // Elements
 const questionEl = document.getElementById("question");
@@ -30,6 +42,111 @@ const resultEl = document.getElementById("result");
 const nextBtn = document.getElementById("nextBtn");
 const timerEl = document.getElementById("timer");
 const highScoreEl = document.getElementById("highScore");
+const authMessageEl = document.getElementById("authMessage");
+
+function getAuthInput() {
+  return {
+    username: document.getElementById("username").value.trim(),
+    password: document.getElementById("password").value.trim()
+  };
+}
+
+function validateAuthInput(username, password) {
+  if (!username && !password) {
+    setAuthMessage("Please enter username and password", true);
+    document.getElementById("username").focus();
+    return false;
+  }
+
+  if (!username) {
+    setAuthMessage("Please enter username", true);
+    document.getElementById("username").focus();
+    return false;
+  }
+
+  if (!password) {
+    setAuthMessage("Please enter password", true);
+    document.getElementById("password").focus();
+    return false;
+  }
+
+  return true;
+}
+
+function setAuthMessage(message, isError = false) {
+  authMessageEl.textContent = message;
+  authMessageEl.className = isError ? "error" : "success";
+}
+
+async function readResponseMessage(response, fallbackMessage) {
+  try {
+    const data = await response.json();
+    return data.message || fallbackMessage;
+  } catch (err) {
+    return fallbackMessage;
+  }
+}
+
+async function signupUser() {
+  const { username, password } = getAuthInput();
+
+  if (!validateAuthInput(username, password)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (!response.ok) {
+      const message = await readResponseMessage(response, "Signup failed. Check if the backend is running.");
+      setAuthMessage(message, true);
+      return;
+    }
+
+    setAuthMessage("Signup successful. You can login now.");
+  } catch (err) {
+    console.error("Signup error:", err);
+    setAuthMessage(`Cannot reach signup API at ${API_URL}. Start the server or deploy the latest backend.`, true);
+  }
+}
+
+async function loginUser() {
+  const { username, password } = getAuthInput();
+
+  if (!validateAuthInput(username, password)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (!response.ok) {
+      const message = await readResponseMessage(response, "Login failed. Check if the backend is running.");
+      setAuthMessage(message, true);
+      return;
+    }
+
+    const data = await response.json();
+
+    playerName = data.username;
+    startQuiz();
+  } catch (err) {
+    console.error("Login error:", err);
+    setAuthMessage(`Cannot reach login API at ${API_URL}. Start the server or deploy the latest backend.`, true);
+  }
+}
 
 // Shuffle function
 function shuffleArray(array) {
@@ -41,14 +158,10 @@ function shuffleArray(array) {
 
 // Start quiz after username
 function startQuiz() {
-  const input = document.getElementById("username").value.trim();
-
-  if (!input) {
-    alert("Please enter your name");
+  if (!playerName) {
+    alert("Please login first");
     return;
   }
-
-  playerName = input;
 
   document.getElementById("userBox").style.display = "none";
   document.getElementById("quiz").style.display = "block";
@@ -154,7 +267,7 @@ nextBtn.onclick = async () => {
     localStorage.setItem("scores", JSON.stringify(scores));
 
     try {
-      const response = await fetch("https://quiz-app-1-s9c3.onrender.com/save-score", {
+      const response = await fetch(`${API_URL}/save-score`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -197,7 +310,7 @@ function showScores() {
 
 async function loadLeaderboard() {
   try {
-    const response = await fetch("https://quiz-app-1-s9c3.onrender.com/leaderboard");
+    const response = await fetch(`${API_URL}/leaderboard`);
     const data = await response.json();
     const scoreBoard = document.getElementById("scoreBoard");
 
