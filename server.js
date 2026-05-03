@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Quiz API is running 🚀");
+});
+
 const scoreSchema = new mongoose.Schema({
   name: { type: String, required: true },
   score: { type: Number, required: true }
