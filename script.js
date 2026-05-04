@@ -43,7 +43,13 @@ const nextBtn = document.getElementById("nextBtn");
 const timerEl = document.getElementById("timer");
 const highScoreEl = document.getElementById("highScore");
 const authMessageEl = document.getElementById("authMessage");
+const scoreBoardEl = document.getElementById("scoreBoard");
 const userStatsEl = document.getElementById("userStats");
+const endActionsEl = document.getElementById("endActions");
+const resultDashboardEl = document.getElementById("resultDashboard");
+
+timerEl.style.display = "none";
+highScoreEl.style.display = "none";
 
 function getAuthInput() {
   return {
@@ -175,6 +181,14 @@ function startQuiz() {
     return;
   }
 
+  current = 0;
+  score = 0;
+  timerEl.style.display = "block";
+  highScoreEl.style.display = "block";
+  resultDashboardEl.style.display = "none";
+  scoreBoardEl.innerHTML = "";
+  userStatsEl.innerHTML = "";
+  endActionsEl.innerHTML = "";
   document.getElementById("userBox").style.display = "none";
   document.getElementById("quiz").style.display = "block";
 
@@ -290,9 +304,10 @@ nextBtn.onclick = async () => {
       console.error("Save score error:", err);
     }
 
-    showScores();
     await loadLeaderboard();
     await loadUserStats(playerName);
+    showEndActions();
+    resultDashboardEl.style.display = "block";
 
     questionEl.textContent = "Quiz Finished!";
     answersEl.innerHTML = "";
@@ -302,34 +317,26 @@ nextBtn.onclick = async () => {
   }
 };
 
-// Show last 5 scores
-function showScores() {
-  const scoreBoard = document.getElementById("scoreBoard");
-  const scores = JSON.parse(localStorage.getItem("scores")) || [];
-
-  scoreBoard.innerHTML = "<h3>Previous Scores:</h3>";
-
-  scores.slice(-5).reverse().forEach(s => {
-    scoreBoard.innerHTML += `<p>${s.name}: ${s.score}</p>`;
-  });
-}
-
 async function loadLeaderboard() {
   try {
     const response = await fetch(`${API_URL}/leaderboard`);
     const data = await response.json();
-    const scoreBoard = document.getElementById("scoreBoard");
 
-    scoreBoard.innerHTML = "<h3>🏆 Global Leaderboard</h3>";
+    scoreBoardEl.innerHTML = "<h3>Leaderboard</h3>";
 
     updateHighScore(data.length ? data[0].score : 0);
 
     data.forEach((user, index) => {
-      scoreBoard.innerHTML += `<p>${index + 1}. ${user.name} - ${user.score}</p>`;
+      scoreBoardEl.innerHTML += `<p>${index + 1}. ${user.name} - ${user.score}</p>`;
     });
   } catch (err) {
     console.error("Error loading leaderboard:", err);
   }
+}
+
+function showEndActions() {
+  endActionsEl.innerHTML = '<button id="playAgainBtn">Play Again</button>';
+  document.getElementById("playAgainBtn").onclick = startQuiz;
 }
 
 async function loadUserStats(name) {
@@ -357,5 +364,3 @@ async function loadUserStats(name) {
     userStatsEl.innerHTML = "";
   }
 }
-
-loadLeaderboard();
