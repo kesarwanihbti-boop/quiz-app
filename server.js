@@ -99,8 +99,19 @@ app.post("/save-score", requireDatabase, async (req, res) => {
 // Get leaderboard
 app.get("/leaderboard", requireDatabase, async (req, res) => {
   try {
-    const topScores = await Score.find().sort({ score: -1 }).limit(10).lean();
-    res.json(topScores);
+    const data = await Score.aggregate([
+      { $sort: { score: -1 } },
+      {
+        $group: {
+          _id: "$name",
+          score: { $max: "$score" }
+        }
+      },
+      { $sort: { score: -1 } },
+      { $limit: 10 }
+    ]);
+
+    res.json(data.map(d => ({ name: d._id, score: d.score })));
   } catch (err) {
     console.error("Leaderboard error:", err);
     res.status(500).json({ message: "Leaderboard failed" });

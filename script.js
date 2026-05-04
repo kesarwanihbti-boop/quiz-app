@@ -20,7 +20,7 @@ let current = 0;
 let score = 0;
 let timeLeft = 10;
 let timer;
-let highScore = localStorage.getItem("highScore") || 0;
+let highScore = 0;
 let playerName = "";
 const DEPLOYED_API_URL = "https://quiz-app-1-s9c3.onrender.com";
 const API_URL = getApiUrl();
@@ -43,6 +43,7 @@ const nextBtn = document.getElementById("nextBtn");
 const timerEl = document.getElementById("timer");
 const highScoreEl = document.getElementById("highScore");
 const authMessageEl = document.getElementById("authMessage");
+const userStatsEl = document.getElementById("userStats");
 
 function getAuthInput() {
   return {
@@ -64,6 +65,12 @@ function validateAuthInput(username, password) {
     return false;
   }
 
+  if (username.length < 3) {
+    alert("Enter valid name");
+    document.getElementById("username").focus();
+    return false;
+  }
+
   if (!password) {
     setAuthMessage("Please enter password", true);
     document.getElementById("password").focus();
@@ -76,6 +83,11 @@ function validateAuthInput(username, password) {
 function setAuthMessage(message, isError = false) {
   authMessageEl.textContent = message;
   authMessageEl.className = isError ? "error" : "success";
+}
+
+function updateHighScore(value) {
+  highScore = Number(value) || 0;
+  highScoreEl.textContent = "High Score: " + highScore;
 }
 
 async function readResponseMessage(response, fallbackMessage) {
@@ -250,12 +262,6 @@ nextBtn.onclick = async () => {
   if (current < quiz.length) {
     loadQuestion();
   } else {
-    // Update high score
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem("highScore", highScore);
-    }
-
     // Save user score locally too
     let scores = JSON.parse(localStorage.getItem("scores")) || [];
 
@@ -286,11 +292,11 @@ nextBtn.onclick = async () => {
 
     showScores();
     await loadLeaderboard();
+    await loadUserStats(playerName);
 
     questionEl.textContent = "Quiz Finished!";
     answersEl.innerHTML = "";
     resultEl.textContent = playerName + ", Your Score: " + score;
-    highScoreEl.textContent = "High Score: " + highScore;
     timerEl.style.display = "none";
     nextBtn.style.display = "none";
   }
@@ -316,6 +322,8 @@ async function loadLeaderboard() {
 
     scoreBoard.innerHTML = "<h3>🏆 Global Leaderboard</h3>";
 
+    updateHighScore(data.length ? data[0].score : 0);
+
     data.forEach((user, index) => {
       scoreBoard.innerHTML += `<p>${index + 1}. ${user.name} - ${user.score}</p>`;
     });
@@ -323,3 +331,31 @@ async function loadLeaderboard() {
     console.error("Error loading leaderboard:", err);
   }
 }
+
+async function loadUserStats(name) {
+  try {
+    const response = await fetch(`${API_URL}/user/${encodeURIComponent(name)}`);
+    const stats = await response.json();
+
+    if (!response.ok) {
+      userStatsEl.innerHTML = "";
+      return;
+    }
+
+    const lastPlayed = stats.lastPlayed
+      ? new Date(stats.lastPlayed).toLocaleString()
+      : "Not available";
+
+    userStatsEl.innerHTML = `
+      <h3>Your Stats</h3>
+      <p>Attempts: ${stats.attempts}</p>
+      <p>Best Score: ${stats.best}</p>
+      <p>Last Played: ${lastPlayed}</p>
+    `;
+  } catch (err) {
+    console.error("Error loading user stats:", err);
+    userStatsEl.innerHTML = "";
+  }
+}
+
+loadLeaderboard();
