@@ -110,8 +110,21 @@ app.get("/leaderboard", requireDatabase, async (req, res) => {
 // Get scores for one user
 app.get("/user/:name", requireDatabase, async (req, res) => {
   try {
-    const data = await Score.find({ name: req.params.name });
-    res.json(data);
+    const data = await Score.find({ name: req.params.name }).sort({ date: -1 }).lean();
+
+    if (!data.length) {
+      return res.json({
+        attempts: 0,
+        best: 0,
+        lastPlayed: null
+      });
+    }
+
+    res.json({
+      attempts: data.length,
+      best: Math.max(...data.map(item => item.score || 0)),
+      lastPlayed: data[0].date
+    });
   } catch (err) {
     console.error("User stats error:", err);
     res.status(500).json({ message: "User stats failed" });
