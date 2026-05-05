@@ -32,6 +32,10 @@ function requireDatabase(req, res, next) {
 const scoreSchema = new mongoose.Schema({
   name: String,
   score: Number,
+  total: Number,
+  accuracy: Number,
+  timeTaken: Number,
+  sections: mongoose.Schema.Types.Mixed,
   date: { type: Date, default: Date.now }
 });
 
@@ -42,6 +46,7 @@ const userSchema = new mongoose.Schema({
 
 const Score = mongoose.model("Score", scoreSchema);
 const User = mongoose.model("User", userSchema);
+const LEADERBOARD_LIMIT = 5;
 
 // Create user
 app.post("/signup", requireDatabase, async (req, res) => {
@@ -87,8 +92,15 @@ app.post("/login", requireDatabase, async (req, res) => {
 // Save score
 app.post("/save-score", requireDatabase, async (req, res) => {
   try {
-    const { name, score } = req.body;
-    const savedScore = await Score.create({ name, score });
+    const { name, score, total, accuracy, timeTaken, sections } = req.body;
+    const savedScore = await Score.create({
+      name,
+      score,
+      total,
+      accuracy,
+      timeTaken,
+      sections
+    });
     res.json({ message: "Saved", id: savedScore._id });
   } catch (err) {
     console.error("Save-score error:", err);
@@ -108,7 +120,7 @@ app.get("/leaderboard", requireDatabase, async (req, res) => {
         }
       },
       { $sort: { score: -1 } },
-      { $limit: 10 }
+      { $limit: LEADERBOARD_LIMIT }
     ]);
 
     res.json(data.map(d => ({ name: d._id, score: d.score })));
@@ -127,14 +139,23 @@ app.get("/user/:name", requireDatabase, async (req, res) => {
       return res.json({
         attempts: 0,
         best: 0,
-        lastPlayed: null
+        average: 0,
+        lastPlayed: null,
+        history: []
       });
     }
 
     res.json({
       attempts: data.length,
       best: Math.max(...data.map(item => item.score || 0)),
-      lastPlayed: data[0].date
+      average: Math.round(data.reduce((sum, item) => sum + (item.score || 0), 0) / data.length),
+      lastPlayed: data[0].date,
+      history: data.slice(0, 5).map(item => ({
+        score: item.score || 0,
+        total: item.total || null,
+        accuracy: item.accuracy || 0,
+        date: item.date
+      })).reverse()
     });
   } catch (err) {
     console.error("User stats error:", err);

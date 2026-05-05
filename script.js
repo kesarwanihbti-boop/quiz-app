@@ -24,6 +24,7 @@ let highScore = 0;
 let playerName = "";
 const DEPLOYED_API_URL = "https://quiz-app-1-s9c3.onrender.com";
 const API_URL = getApiUrl();
+const LEADERBOARD_LIMIT = 5;
 
 function getApiUrl() {
   const localHosts = ["localhost", "127.0.0.1"];
@@ -284,6 +285,9 @@ nextBtn.onclick = async () => {
       score: score
     });
 
+    scores.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+    scores = scores.slice(0, LEADERBOARD_LIMIT);
+
     localStorage.setItem("scores", JSON.stringify(scores));
 
     try {
@@ -326,7 +330,7 @@ async function loadLeaderboard() {
 
     updateHighScore(data.length ? data[0].score : 0);
 
-    data.forEach((user, index) => {
+    data.slice(0, LEADERBOARD_LIMIT).forEach((user, index) => {
       scoreBoardEl.innerHTML += `<p>${index + 1}. ${user.name} - ${user.score}</p>`;
     });
   } catch (err) {
