@@ -1,0 +1,15 @@
+node_modules/
+quiz-react/node_modules/
+quiz-react/build/
+static/
+
+*.log
+.env
+.env.*
+
+/asset-manifest.json
+/favicon.ico
+/logo192.png
+/logo512.png
+/manifest.json
+/robots.txt
