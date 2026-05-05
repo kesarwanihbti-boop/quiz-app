@@ -1,50 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Quiz App</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <!-- High Score -->
-  <h3 id="highScore">High Score: 0</h3>
-
-  <!-- Timer -->
-  <h3 id="timer">Time: 10</h3>
-
-<div id="userBox">
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username" autocomplete="username" required>
-  <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
-  <p id="authMessage"></p>
-  <button onclick="loginUser()">Login</button>
-  <button class="secondary-btn" onclick="signupUser()">Sign Up</button>
-</div>
-
-  <!-- Quiz Container -->
-  <div id="quiz" style="display:none;">
-    <h2 id="question">Loading...</h2>
-    
-    <!-- Answers will be inserted by JS -->
-    <div id="answers"></div>
-    
-    <!-- Next Button -->
-    <button id="nextBtn" style="display:none;">Next</button>
-    
-    <!-- Result -->
-    <p id="result"></p>
-  </div>
-
-  <div id="resultDashboard">
-    <div id="scoreBoard"></div>
-    <div id="userStats"></div>
-    <div id="endActions"></div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Aptitude test platform for timed online assessments"
+    />
+    <link rel="apple-touch-icon" href="logo192.png" />
+    <link rel="manifest" href="manifest.json" />
+    <title>Aptitude Test Platform</title>
+    <script defer src="static/js/main.6f578a09.js"></script>
+    <link href="static/css/main.004ded42.css" rel="stylesheet" />
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
 </html>
