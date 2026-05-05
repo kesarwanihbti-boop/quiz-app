@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 
 if (process.env.MONGODB_URI) {
   mongoose.connect(process.env.MONGODB_URI)
@@ -13,9 +15,8 @@ if (process.env.MONGODB_URI) {
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
   res.send("Quiz API is running 🚀");
 });
 
@@ -162,6 +163,22 @@ app.get("/user/:name", requireDatabase, async (req, res) => {
     res.status(500).json({ message: "User stats failed" });
   }
 });
+
+const reactBuildPath = path.join(__dirname, "quiz-react", "build");
+
+if (fs.existsSync(reactBuildPath)) {
+  app.use(express.static(reactBuildPath));
+
+  app.use((req, res, next) => {
+    if (req.method !== "GET") {
+      return next();
+    }
+
+    res.sendFile(path.join(reactBuildPath, "index.html"));
+  });
+} else {
+  app.use(express.static(__dirname));
+}
 
 const PORT = process.env.PORT || 3000;
 
