@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const fs = require("fs");
 const path = require("path");
 
 if (process.env.MONGODB_URI) {
@@ -166,19 +165,15 @@ app.get("/user/:name", requireDatabase, async (req, res) => {
 
 const reactBuildPath = path.join(__dirname, "quiz-react", "build");
 
-if (fs.existsSync(reactBuildPath)) {
-  app.use(express.static(reactBuildPath));
+app.use(express.static(reactBuildPath));
 
-  app.use((req, res, next) => {
-    if (req.method !== "GET") {
-      return next();
-    }
+app.use((req, res, next) => {
+  if (req.method !== "GET") {
+    return next();
+  }
 
-    res.sendFile(path.join(reactBuildPath, "index.html"));
-  });
-} else {
-  app.use(express.static(__dirname));
-}
+  res.sendFile(path.join(reactBuildPath, "index.html"));
+});
 
 const PORT = process.env.PORT || 3000;
 
