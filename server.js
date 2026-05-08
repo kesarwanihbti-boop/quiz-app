@@ -1,12 +1,29 @@
 const express = require("express");
+require("dotenv").config({ quiet: true });
 const cors = require("cors");
+const dns = require("dns");
 const mongoose = require("mongoose");
 const path = require("path");
 
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI;
+const hasPlaceholderMongoUri = mongoUri && /<cluster-url>|cluster0\.abc123\.mongodb\.net/i.test(mongoUri);
+const mongoDnsServers = (process.env.MONGODB_DNS_SERVERS || "1.1.1.1,8.8.8.8")
+  .split(",")
+  .map(server => server.trim())
+  .filter(Boolean);
+
+if (hasPlaceholderMongoUri) {
+  console.log("MONGODB_URI still contains a placeholder Atlas cluster URL. Replace it with your real Atlas connection string.");
+} else if (mongoUri) {
+  if (mongoUri.startsWith("mongodb+srv://") && mongoDnsServers.length) {
+    dns.setServers(mongoDnsServers);
+  }
+
+  mongoose.connect(mongoUri)
     .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.error("MongoDB connection failed:", err.message);
+    });
 } else {
   console.log("MONGODB_URI is missing. Database routes will not work.");
 }

@@ -6,6 +6,7 @@ static/
 *.log
 .env
 .env.*
+!.env.example
 
 /asset-manifest.json
 /favicon.ico
