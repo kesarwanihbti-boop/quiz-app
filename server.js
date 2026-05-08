@@ -182,13 +182,20 @@ app.get("/user/:name", requireDatabase, async (req, res) => {
 
 const reactBuildPath = path.join(__dirname, "quiz-react", "build");
 
-app.use(express.static(reactBuildPath));
+app.use(express.static(reactBuildPath, {
+  etag: false,
+  lastModified: false,
+  setHeaders: res => {
+    res.setHeader("Cache-Control", "no-store");
+  }
+}));
 
 app.use((req, res, next) => {
   if (req.method !== "GET") {
     return next();
   }
 
+  res.setHeader("Cache-Control", "no-store");
   res.sendFile(path.join(reactBuildPath, "index.html"));
 });
 
